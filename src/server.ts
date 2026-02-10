@@ -1,0 +1,43 @@
+import "dotenv/config";
+import { AgentServer } from "@wardenprotocol/agent-kit";
+import { handler } from "./agent.js";
+
+const PORT = Number(process.env.PORT) || 3000;
+const HOST = process.env.HOST || "localhost";
+const BASE_URL = `http://${HOST}:${PORT}`;
+
+const server = new AgentServer({
+  agentCard: {
+    name: "Test Agent",
+    description: "A helpful AI agent named Test Agent",
+    url: BASE_URL,
+    version: "0.1.0",
+    capabilities: {
+      streaming: true,
+      multiTurn: false,
+    },
+    skills: [{
+        id: "Info",
+        name: "Info",
+        description: "Info capability",
+        tags: [],
+      }],
+  },
+  handler,
+});
+
+server.listen(PORT).then(() => {
+  
+  console.log(`Test Agent (Dual Protocol)`);
+  console.log(`Server: ${BASE_URL}`);
+  console.log();
+  console.log("A2A Protocol:");
+  console.log(`  Agent Card: ${BASE_URL}/.well-known/agent-card.json`);
+  console.log(`  JSON-RPC:   POST ${BASE_URL}/`);
+  console.log();
+  console.log("LangGraph Protocol:");
+  console.log(`  Info:       ${BASE_URL}/info`);
+  console.log(`  Assistants: ${BASE_URL}/assistants`);
+  console.log(`  Threads:    ${BASE_URL}/threads`);
+  console.log(`  Runs:       ${BASE_URL}/runs`);
+});
